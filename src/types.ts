@@ -12,9 +12,9 @@ export type ProxyPayload = {
   /** JWT expiration */
   exp: number;
   /** JWT audience */
-  aud: string
+  aud: string;
   /** JWT scope */
-  scope?: string
+  scope?: string;
 };
 
 /**

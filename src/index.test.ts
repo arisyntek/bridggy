@@ -18,7 +18,7 @@ describe('Bridggy Client', () => {
   describe('configure', () => {
     it('should configure the client with token', () => {
       const config = {
-        token: 'test-token',
+        token: 'test-token'
       };
 
       bridggy.configure(config);
@@ -27,7 +27,7 @@ describe('Bridggy Client', () => {
 
     it('should set retry to true by default', () => {
       const config = {
-        token: 'test-token',
+        token: 'test-token'
       };
 
       bridggy.configure(config);
@@ -43,13 +43,13 @@ describe('Bridggy Client', () => {
         JSON.stringify({
           sub: 'test',
           exp: Math.floor(Date.now() / 1000) + 3600, // expires in 1 hour
-          scope: 'localhost:8787',
+          scope: 'localhost:8787'
         })
       );
       const accessToken = `${header}.${payload}.signature`;
 
       bridggy.configure({
-        token: 'proxy-token',
+        token: 'proxy-token'
       });
 
       // Set the access token directly to avoid exchange call
@@ -58,15 +58,13 @@ describe('Bridggy Client', () => {
 
     it('should throw error if config not provided', async () => {
       const freshBridggy = new (bridggy.constructor as any)();
-      await expect(
-        freshBridggy.fetch('https://api.example.com/data')
-      ).rejects.toThrow('Config not provided');
+      await expect(freshBridggy.fetch('https://api.example.com/data')).rejects.toThrow('Config not provided');
     });
 
     it('should make a request to the proxy URL', async () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,
-        headers: new Headers(),
+        headers: new Headers()
       } as Response);
 
       await bridggy.fetch('https://api.example.com/data');
@@ -79,7 +77,7 @@ describe('Bridggy Client', () => {
     it('should remove NonProxyHeaders from request', async () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,
-        headers: new Headers(),
+        headers: new Headers()
       } as Response);
 
       const headers = new Headers();
@@ -105,7 +103,7 @@ describe('Bridggy Client', () => {
     it('should set required Bridggy headers', async () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,
-        headers: new Headers(),
+        headers: new Headers()
       } as Response);
 
       await bridggy.fetch('https://api.example.com/data');
@@ -124,12 +122,10 @@ describe('Bridggy Client', () => {
 
       mockFetch.mockResolvedValueOnce({
         ok: true,
-        headers: errorHeaders,
+        headers: errorHeaders
       } as Response);
 
-      await expect(
-        bridggy.fetch('https://api.example.com/data')
-      ).rejects.toThrow('status: 500 Proxy error occurred');
+      await expect(bridggy.fetch('https://api.example.com/data')).rejects.toThrow('status: 500 Proxy error occurred');
     });
 
     it('should retry on 502 GET requests', async () => {
@@ -141,11 +137,11 @@ describe('Bridggy Client', () => {
       mockFetch
         .mockResolvedValueOnce({
           ok: true,
-          headers: errorHeaders,
+          headers: errorHeaders
         } as Response)
         .mockResolvedValueOnce({
           ok: true,
-          headers: new Headers(),
+          headers: new Headers()
         } as Response);
 
       await bridggy.fetch('https://api.example.com/data', { method: 'GET' });
@@ -160,12 +156,12 @@ describe('Bridggy Client', () => {
 
       mockFetch.mockResolvedValueOnce({
         ok: true,
-        headers: errorHeaders,
+        headers: errorHeaders
       } as Response);
 
-      await expect(
-        bridggy.fetch('https://api.example.com/data', { method: 'POST' })
-      ).rejects.toThrow('status: 502 Bad Gateway');
+      await expect(bridggy.fetch('https://api.example.com/data', { method: 'POST' })).rejects.toThrow(
+        'status: 502 Bad Gateway'
+      );
 
       expect(mockFetch).toHaveBeenCalledTimes(1);
     });
@@ -173,12 +169,12 @@ describe('Bridggy Client', () => {
     it('should handle Request objects as input', async () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,
-        headers: new Headers(),
+        headers: new Headers()
       } as Response);
 
       const request = new Request('https://api.example.com/data', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json' }
       });
 
       await bridggy.fetch(request);
@@ -190,7 +186,7 @@ describe('Bridggy Client', () => {
     it('should handle URL objects as input', async () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,
-        headers: new Headers(),
+        headers: new Headers()
       } as Response);
 
       const url = new URL('https://api.example.com/data');
@@ -209,13 +205,13 @@ describe('Bridggy Client', () => {
         JSON.stringify({
           sub: 'test',
           exp: Math.floor(Date.now() / 1000) + 3600,
-          aud: 'http://localhost:8787',
+          aud: 'http://localhost:8787'
         })
       );
       const proxyToken = `${proxyHeader}.${proxyPayload}.signature`;
 
       bridggy.configure({
-        token: proxyToken,
+        token: proxyToken
       });
     });
 
@@ -225,14 +221,14 @@ describe('Bridggy Client', () => {
         JSON.stringify({
           sub: 'test',
           exp: Math.floor(Date.now() / 1000) + 3600,
-          scope: 'localhost:8787',
+          scope: 'localhost:8787'
         })
       );
       const accessToken = `${header}.${payload}.signature`;
 
       mockFetch.mockResolvedValueOnce({
         ok: true,
-        json: async () => ({ token: accessToken }),
+        json: async () => ({ token: accessToken })
       } as Response);
 
       await bridggy['exchange']();
@@ -240,7 +236,7 @@ describe('Bridggy Client', () => {
       expect(mockFetch).toHaveBeenCalledWith(
         'http://localhost:8787/token/exchange',
         expect.objectContaining({
-          method: 'POST',
+          method: 'POST'
         })
       );
 
@@ -250,12 +246,10 @@ describe('Bridggy Client', () => {
     it('should throw error if exchange fails', async () => {
       mockFetch.mockResolvedValueOnce({
         ok: false,
-        status: 401,
+        status: 401
       } as Response);
 
-      await expect(bridggy['exchange']()).rejects.toThrow(
-        'status: 401 proxy: Token exchange failed'
-      );
+      await expect(bridggy['exchange']()).rejects.toThrow('status: 401 proxy: Token exchange failed');
     });
   });
 
@@ -270,7 +264,7 @@ describe('Bridggy Client', () => {
       const payload = btoa(
         JSON.stringify({
           sub: 'test',
-          exp: Math.floor(Date.now() / 1000) - 3600, // expired 1 hour ago
+          exp: Math.floor(Date.now() / 1000) - 3600 // expired 1 hour ago
         })
       );
       bridggy['token'] = `${header}.${payload}.signature`;
@@ -283,7 +277,7 @@ describe('Bridggy Client', () => {
       const payload = btoa(
         JSON.stringify({
           sub: 'test',
-          exp: Math.floor(Date.now() / 1000) + 30, // expires in 30 seconds
+          exp: Math.floor(Date.now() / 1000) + 30 // expires in 30 seconds
         })
       );
       bridggy['token'] = `${header}.${payload}.signature`;
@@ -294,9 +288,7 @@ describe('Bridggy Client', () => {
     it('should throw error for malformed token', () => {
       bridggy['token'] = 'invalid-token';
 
-      expect(() => bridggy['isTokenExpired']()).toThrow(
-        'invalid or malformed token'
-      );
+      expect(() => bridggy['isTokenExpired']()).toThrow('invalid or malformed token');
     });
   });
 });

@@ -13,7 +13,6 @@ const HeaderSource = 'gg-x-source';
 const NonProxyHeaders = [
   'user-agent',
   'x-forwarded-for',
-  'origin',
   'cookie',
   'connection',
   'keep-alive',
@@ -72,9 +71,12 @@ class Bridggy {
     headers.set(HeaderToken, this.token);
     if (typeof window !== 'undefined') headers.set(HeaderOrigin, window.location.origin);
 
-    // remove non-proxy headers
-    for (const header of NonProxyHeaders) {
-      headers.delete(header);
+    // remove privacy/browser specific headers
+    for (const [key] of headers) {
+      const lowerKey = key.toLowerCase();
+      if (NonProxyHeaders.includes(lowerKey) || lowerKey.startsWith('sec-')) {
+        headers.delete(key);
+      }
     }
 
     // create request - spread init first, then override with proxy headers
