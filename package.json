@@ -1,6 +1,6 @@
 {
   "name": "@bridggy/client",
-  "version": "1.1.7",
+  "version": "1.1.8",
   "description": "Client for the Bridggy proxy service",
   "main": "dist/index.js",
   "module": "dist/index.js",

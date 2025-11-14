@@ -72,12 +72,12 @@ class Bridggy {
     if (typeof window !== 'undefined') headers.set(HeaderOrigin, window.location.origin);
 
     // remove privacy/browser specific headers
-    for (const [key] of headers) {
+    headers.forEach((_, key) => {
       const lowerKey = key.toLowerCase();
       if (NonProxyHeaders.includes(lowerKey) || lowerKey.startsWith('sec-')) {
         headers.delete(key);
       }
-    }
+    });
 
     // create request - spread init first, then override with proxy headers
     const { headers: _initHeaders, ...restInit } = init || {};
