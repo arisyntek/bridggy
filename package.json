@@ -1,0 +1,54 @@
+{
+  "name": "@bridggy/client",
+  "version": "1.1.7",
+  "description": "Client for the Bridggy proxy service",
+  "main": "dist/index.js",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "browser": "dist/index.js",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "lint": "eslint src/ --fix",
+    "format": "prettier --write src/",
+    "format:check": "prettier --check src/",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "bridggy",
+    "proxy",
+    "cors",
+    "cross-origin",
+    "http-proxy",
+    "proxy-client",
+    "browser"
+  ],
+  "homepage": "https://github.com/arisyntek/bridggy",
+  "repository": "arisyntek/bridggy",
+  "author": "Arisyntek",
+  "license": "MIT",
+  "devDependencies": {
+    "@eslint/js": "9.39.1",
+    "@vitest/ui": "4.0.8",
+    "eslint": "9.39.1",
+    "eslint-config-prettier": "10.1.8",
+    "prettier": "3.6.2",
+    "typescript": "5.9.3",
+    "typescript-eslint": "8.46.3",
+    "vitest": "4.0.8"
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ]
+}
