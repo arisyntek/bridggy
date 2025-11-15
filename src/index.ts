@@ -18,7 +18,8 @@ const NonProxyHeaders = [
   'keep-alive',
   'transfer-encoding',
   'upgrade-insecure-requests',
-  'priority'
+  'priority',
+  'accept-language'
 ];
 
 // Values
