@@ -1,4 +1,4 @@
-import { Config, ProxyPayload, TokenRequest, TokenResponse } from './types.js';
+import { Config, TokenPayload, TokenRequest, TokenResponse } from './types.js';
 
 // Headers
 export const HeaderStatus = 'gg-x-status';
@@ -19,7 +19,8 @@ const NonProxyHeaders = [
   'transfer-encoding',
   'upgrade-insecure-requests',
   'priority',
-  'accept-language'
+  'accept-language',
+  'cache-control' // overwrites by origin server
 ];
 
 // Values
@@ -63,7 +64,7 @@ class Bridggy {
     const url = this.getUrl(input);
 
     // rewrite to proxy URL
-    const proxyUrl = `https://${this.getTokenPayload(this.token).scope}.bridggy.com/proxy?u=${this.b64urlEncode(url.href)}`;
+    const proxyUrl = `${this.getTokenPayload(this.proxyToken).aud}/proxy?u=${this.b64urlEncode(url.href)}`;
 
     // merge headers
     const headers = new Headers(input instanceof Request ? input.headers : init?.headers);
@@ -102,7 +103,7 @@ class Bridggy {
           await this.sleep(RetryDelay);
           continue;
         }
-        throw new Error(`status: ${proxyStatus} ${proxyError}`);
+        throw new Error(`${proxyStatus} ${proxyError}`);
       }
 
       // return response
@@ -110,7 +111,7 @@ class Bridggy {
     }
 
     // this should never be reached, but TS requires a return
-    throw new Error('proxy: unexpected fetch failed after retries');
+    throw new Error('Unexpected fetch failed after retries');
   }
 
   /**
@@ -133,7 +134,7 @@ class Bridggy {
     });
 
     if (!resp.ok) {
-      throw new Error(`status: ${resp.status} proxy: Token exchange failed`);
+      throw new Error(`${resp.status} Token exchange failed`);
     }
 
     const tokenResp: TokenResponse = await resp.json();
@@ -142,7 +143,7 @@ class Bridggy {
   }
 
   /**
-   * Normalize the input to a URL object and get origin
+   * Normalize the input to a URL object
    * @param input
    * @private
    */
@@ -153,7 +154,7 @@ class Bridggy {
       try {
         url = new URL(input);
       } catch {
-        throw new TypeError(`input string must be an absolute URL, got "${input}"`);
+        throw new TypeError(`Input string must be an absolute URL, got "${input}"`);
       }
     } else if (input instanceof URL) {
       url = input;
@@ -181,11 +182,11 @@ class Bridggy {
       // set expired if less than a minute before expiration
       return Date.now() > data.exp * 1000 - 60_000;
     } catch {
-      throw new Error('invalid or malformed token');
+      throw new Error('Invalid or malformed token');
     }
   }
 
-  private getTokenPayload(token: string): ProxyPayload {
+  private getTokenPayload(token: string): TokenPayload {
     const payload = token.split('.')[1];
     if (!payload) throw new Error('Invalid token');
 

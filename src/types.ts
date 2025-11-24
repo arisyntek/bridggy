@@ -8,7 +8,7 @@ export type TokenRequest = {
   token: string;
 };
 
-export type ProxyPayload = {
+export type TokenPayload = {
   /** JWT expiration */
   exp: number;
   /** JWT audience */

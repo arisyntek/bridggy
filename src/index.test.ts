@@ -42,6 +42,7 @@ describe('Bridggy Client', () => {
       const payload = btoa(
         JSON.stringify({
           sub: 'test',
+          aud: 'http://localhost:8787',
           exp: Math.floor(Date.now() / 1000) + 3600, // expires in 1 hour
           scope: 'localhost:8787'
         })
@@ -49,7 +50,7 @@ describe('Bridggy Client', () => {
       const accessToken = `${header}.${payload}.signature`;
 
       bridggy.configure({
-        token: 'proxy-token'
+        token: accessToken
       });
 
       // Set the access token directly to avoid exchange call
@@ -71,7 +72,7 @@ describe('Bridggy Client', () => {
 
       expect(mockFetch).toHaveBeenCalled();
       const callUrl = mockFetch.mock.calls[0][0] as string;
-      expect(callUrl).toContain('https://localhost:8787.bridggy.com/proxy?u=');
+      expect(callUrl).toContain('http://localhost:8787/proxy?u=aHR0cHM6Ly9hcGkuZXhhbXBsZS5jb20vZGF0YQ');
     });
 
     it('should remove NonProxyHeaders from request', async () => {
@@ -125,7 +126,7 @@ describe('Bridggy Client', () => {
         headers: errorHeaders
       } as Response);
 
-      await expect(bridggy.fetch('https://api.example.com/data')).rejects.toThrow('status: 500 Proxy error occurred');
+      await expect(bridggy.fetch('https://api.example.com/data')).rejects.toThrow('500 Proxy error occurred');
     });
 
     it('should retry on 502 GET requests', async () => {
@@ -160,7 +161,7 @@ describe('Bridggy Client', () => {
       } as Response);
 
       await expect(bridggy.fetch('https://api.example.com/data', { method: 'POST' })).rejects.toThrow(
-        'status: 502 Bad Gateway'
+        '502 Bad Gateway'
       );
 
       expect(mockFetch).toHaveBeenCalledTimes(1);
@@ -193,7 +194,7 @@ describe('Bridggy Client', () => {
       await bridggy.fetch(url);
 
       const callUrl = mockFetch.mock.calls[0][0] as string;
-      expect(callUrl).toContain('https://localhost:8787.bridggy.com/proxy?u=');
+      expect(callUrl).toContain('http://localhost:8787/proxy?u=aHR0cHM6Ly9hcGkuZXhhbXBsZS5jb20vZGF0YQ');
     });
   });
 
@@ -249,7 +250,7 @@ describe('Bridggy Client', () => {
         status: 401
       } as Response);
 
-      await expect(bridggy['exchange']()).rejects.toThrow('status: 401 proxy: Token exchange failed');
+      await expect(bridggy['exchange']()).rejects.toThrow('401 Token exchange failed');
     });
   });
 
@@ -288,7 +289,7 @@ describe('Bridggy Client', () => {
     it('should throw error for malformed token', () => {
       bridggy['token'] = 'invalid-token';
 
-      expect(() => bridggy['isTokenExpired']()).toThrow('invalid or malformed token');
+      expect(() => bridggy['isTokenExpired']()).toThrow('Invalid or malformed token');
     });
   });
 });
